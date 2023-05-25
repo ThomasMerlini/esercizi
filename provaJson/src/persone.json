@@ -1,0 +1,17 @@
+[
+    {
+        "nome": "Mario",
+        "cognome": "Rossi",
+        "data_nascita": "11/11/2000"
+    },
+    {
+        "nome": "Giovanni",
+        "cognome": "Felpa",
+        "data_nascita": "12/12/2012"
+    },
+    {
+        "nome": "Alessandro",
+        "cognome": "Alessandria",
+        "data_nascita": "01/09/1999"
+    }
+]
