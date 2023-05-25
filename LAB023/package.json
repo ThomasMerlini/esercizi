@@ -1,14 +1,13 @@
 {
-  "name": "esercizio",
+  "name": "lab023",
   "version": "1.0.0",
+  "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node ./src/index.js"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "fs": "^0.0.1-security",
     "prompt-sync": "^4.2.0"

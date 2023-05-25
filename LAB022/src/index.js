@@ -1,145 +1,144 @@
-const prompt = require("prompt-sync")();
-
-class GestioneFileSynk {
-    fs = require('fs'); //selezionare libreria
-
-    constructor(nomeFile) {
-        this.nomeFile = nomeFile;
-
-    }
-    ReadFile() {
-        try {
-            const data = this.fs.readFileSync(this.nomeFile, "utf8");
-            return data;
-        } catch (err) {
-            console.error(err);
-        }
-    };
-    WriteFile(msg) {
-        try {
-            this.fs.writeFileSync(this.nomeFile, msg + " \r\n", { flag: 'a+' });
-            // file written successfully
-        } catch (err) {
-            console.error(err);
-        }
-    };
-    AppendFile(msg) {
-        ////?????????????????????
-    };
-}
+const fs = require('fs');
+const prompt = require('prompt-sync')();
 
 class Persona {
-    #nome;
-    #cognome;
-    #data_nascita;
-    constructor(nome, cognome, data_nascita) {
-        this.nome = nome;
-        this.cognome = cognome;
-        this.data_nascita = data_nascita;
+  #nome;
+  #cognome;
+  #dataDiNascita;
+
+  constructor(nome, cognome, dataDiNascita) {
+    this.nome = nome;
+    this.cognome = cognome;
+    this.dataDiNascita = dataDiNascita;
+  }
+
+  get nome() {
+    return this.#nome;
+  }
+
+  set nome(nuovoNome) {
+    this.#nome = nuovoNome;
+  }
+
+  get cognome() {
+    return this.#cognome;
+  }
+
+  set cognome(nuovoCognome) {
+    this.#cognome = nuovoCognome;
+  }
+
+  get dataDiNascita() {
+    return this.#dataDiNascita;
+  }
+
+  set dataDiNascita(nuovaData) {
+    this.#dataDiNascita = nuovaData;
+  }
+
+  stampaNomeCompleto() {
+    return this.cognome + " " + this.nome;
+  }
+
+  stampaEta() {
+    let dataOdierna = new Date();
+    let eta = dataOdierna.getFullYear() - this.dataDiNascita.getFullYear()
+    if (dataOdierna.getMonth() <= this.dataDiNascita.getMonth()) {
+      if (dataOdierna.getDate() < this.dataDiNascita.getDate()) {
+        eta--;
+      }
     }
-    set nome(name) {
-        this.#nome = name;
-    }
-    set cognome(surname) {
-        this.#cognome = surname;
-    }
-    set data_nascita(date) {
-        this.#data_nascita = date;
-    }
-    get nome() {
-        return this.#nome;
-    }
-    get cognome() {
-        return this.#cognome;
-    }
-    get data_nascita() {
-        return this.#data_nascita;
-    }
-    ToString() {
-        return `Nome : ${this.nome}\nCognome : ${this.cognome}\nData nascita : ${this.data_nascita}`;
-    }
-    ToCsv() {
-        return `${this.nome},${this.cognome},${this.data_nascita}`;
-    }
+    return eta;
+  }
+
+  stampaDataDiNascita() {
+    return this.dataDiNascita.toLocaleDateString();
+  }
+
+  ToString() {
+    return `Nome e cognome: ${this.stampaNomeCompleto()}\n` +
+      `Data di nascità: ${this.stampaDataDiNascita()}\n` +
+      `Età: ${this.stampaEta()}\n`
+  }
 }
 
-function importFile(file, persone) {
-    let gFs = new GestioneFileSynk(file);
-    let data = gFs.ReadFile().split(/\r?\n/);
-    data.splice(0, 1);
+function readCSV() {
+  let data;
+  try {
+    data = fs.readFileSync(path, "utf8")
+  } catch (err) {
+    console.error(err);
+  }
+  data = data.split(/\r?\n/);
+  data.splice(0, 1);
+  // console.log(data);
 
-    for (let i = 0; i < data.length; i++) {
-        var riga = data[i].split(",");
-        var persona = new Persona(riga[0], riga[1], riga[2]);
-        persone.push(persona);
-    }
+  for (let i = 0; i < data.length; i++) {
+    var riga = data[i].split(",");
+    var dataDiNascita = riga[2].split("/");
+    var date = new Date(parseInt(dataDiNascita[2]), parseInt(dataDiNascita[1]) - 1, parseInt(dataDiNascita[0]));
+    var persona = new Persona(riga[0], riga[1], date);
+    persone.push(persona);
+  }
 
-    console.log("Il file è importato correttamente");
-
-    for (let i = 0; i < persone.length; i++) {
-        console.log("Persona " + (i + 1) + ":\n");
-        console.log(persone[i].ToString());
-    }
+  print();
 }
 
-function exportFile(file, persone) {
-    let gfsEsporta = new GestioneFileSynk(file);
-    gfsEsporta.WriteFile("Nome,Cognome,data_di_nascita");
-    for (let i = 0; i < persone.length; i++) {
-        gfsEsporta.WriteFile(persone[i].ToCsv());
-    }
-    console.log("File esportati correttamente");
+function print() {
+  for (let i = 0; i < persone.length; i++) {
+    console.log("Persona " + (i + 1) + ":\n");
+    console.log(persone[i].ToString());
+  }
 }
 
-function countWord(file, word) {
-    let count = 0;
-    let gFs = new GestioneFileSynk(file);
-    let data = gFs.ReadFile();
-    let righe = data.split(/\r?\n/);
-    righe.splice(0, 1);
+function writeCSV() {
+  var csv = "Nome,Cognome,Data\r\n";
+  for (let i = 0; i < persone.length; i++) {
+    var year = persone[i].dataDiNascita.getFullYear();
+    var month = persone[i].dataDiNascita.getMonth()+1;
+    var day = persone[i].dataDiNascita.getDate();
+    var name = persone[i].nome;
+    var surname = persone[i].cognome;
 
-    for (let i = 0; i < righe.length; i++) {
-        var riga = righe[i];
-        var parole = riga.split(",");
-        for (let j = 0; j < parole.length; j++) {
-            var parola = parole[j];
-            if (parola == word) {
-                count++;
-            }
-        }
+    // console.log(year+" "+month+" "+day)
+
+    var date = day + "/" + month + "/" + year;
+    let data = `${name},${surname},${date}`;
+    if (i==persone.length-1){
+      csv += data;
+    }else{
+      csv += data+"\r\n";
     }
-
-    console.log(`Ci sono ${count} occorrenze della parola ${word}`);
+  }
+  try {
+    fs.writeFileSync(path, csv, { flag: 'w+' });
+    // file written successfully
+  } catch (err) {
+    console.error(err);
+  }
 }
 
-function menu() {
-    const persone = [];
-    let controllo = true;
-    while (controllo) {
-        console.log("Menu: \n1) import;\n2) export;\n3) conta numero occorrenze di una parola;\n4) uscita dal programma.");
-        var choice = prompt("Inserire 1, 2, 3 o 4? ");
-        switch (parseInt(choice)) {
-            case 1:
-                var file = prompt("Inserisci il percorso del file? ");
-                importFile(file, persone);
-                break;
-            case 2:
-                var file = prompt("Inserisci il percorso del file? ");
-                exportFile(file, persone);
-                break;
-            case 3:
-                var file = prompt("Inserisci il percorso del file? ");
-                var word = prompt("Inserisci la parola da cercare? ");
-                countWord(file, word);
-                break;
-            case 4:
-                controllo = false;
-                break;
-            default:
-                controllo = false;
-                break;
-        }
-    }
+function create() {
+  var name = prompt("Qual'è il tuo nome? ");
+  var surname = prompt("Qual'è il tuo cognome? ");
+
+  var date = prompt("Qual'è la tua data di nascità? Usando questo formato (dd/mm/yyyy). ");
+  date = date.split("/");
+  var day = date[0];
+  var month = date[1];
+  var year = date[2];
+  date = new Date(parseInt(year), parseInt(month)-1, parseInt(day));
+  var persona = new Persona(name, surname, date);
+  persone.push(persona);
 }
 
-menu();
+const path = "./src/persone - Foglio1.csv";
+const persone = [];
+
+readCSV();
+
+create();
+
+print();
+
+writeCSV();
