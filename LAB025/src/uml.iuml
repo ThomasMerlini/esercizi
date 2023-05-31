@@ -1,0 +1,28 @@
+@startuml Lab025
+
+    class Gestionale{
+        nome : String
+        istituzioni : Istituzione[]
+        --
+        creaIstituzione(nome : String) : Boolean
+        getIstituzione(nome : String): Istituzione
+    }
+
+    class Persona{
+        nome : String
+        cognome : String
+        data_nascita : String
+    }
+
+    class Istituzione{
+        nome : String
+        lista_personale : Persona[]
+        --
+        creaPersona(persona : Persona) : Boolean
+        aggiungiPersona(nome : String, cognome : String, data_nascita : String) : Boolean
+    }
+
+    Gestionale "1..1"--"1..N" Persona
+    Gestionale "1..1"--"1..N" Istituzione
+
+@enduml
